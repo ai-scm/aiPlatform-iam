@@ -17,5 +17,5 @@ phases:
       - aws s3 cp $PRODUCT_NAME.zip s3://$BUCKET_NAME/$TYPE/$PRODUCT_NAME/$VERSION/$PRODUCT_NAME.zip
       - echo "Uploading to S3 completed"
       - echo "Uploading to CHANGELOG ...."
-      - aws s3 cp CHANGELOG.md s3://houndoc-changelog/MD/AIPlatformBff.md
+      - aws s3 cp CHANGELOG.md s3://houndoc-changelog/MD/AIPlatformIAM.md
       - aws cloudfront create-invalidation --distribution-id EIRU1D5WYXMJD --paths "/*"
