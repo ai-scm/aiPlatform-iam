@@ -60,6 +60,8 @@ ENV PROXY_ADDRESS_FORWARDING=true
 
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
+COPY /truststores/ /opt/keycloak/truststores
+
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "--config-file=/opt/keycloak/conf/keycloak.conf", "start", "--optimized"]
 
 ## ---------------------------------------------------------------- ##
