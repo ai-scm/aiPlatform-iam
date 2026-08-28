@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - zip -r $PRODUCT_NAME.zip . -x "buildspec.yml" -x "version.txt"
-      - VERSION=dev.$(cat version.txt)
+      - VERSION=$(cat version.txt)
       - |
         if echo "$VERSION" | grep -Eq -- "-dev\.[0-9]+$"; then
           echo "Versión de desarrollo detectada ($VERSION). Omitiendo actualizaciones de DynamoDB, local CHANGELOG y Cloudfront."
@@ -17,9 +17,9 @@ phases:
           echo "Versión estable detectada ($VERSION)."
           echo "Actualizando versión de AIPlatformIAM en la tabla houndoc_component_master..."
           aws dynamodb update-item --table-name houndoc_component_master --key '{"component": {"S": "AIPlatformIAM"}}' --update-expression "SET version = :v" --expression-attribute-values "{\":v\": {\"S\": \"$VERSION\"}}" --region $AWS_DEFAULT_REGION
-          echo "Actualizando versión de AIPlatform en la tabla houndoc_product_master..."
+          echo "Actualizando versión de IAM en la tabla houndoc_product_master..."
           PRODUCT_VERSION=$(echo $VERSION | cut -d. -f1,2)
-          aws dynamodb update-item --table-name houndoc_product_master --key '{"product": {"S": "AIPlatform"}}' --update-expression "SET version = :v" --expression-attribute-values "{\":v\": {\"S\": \"$PRODUCT_VERSION\"}}" --region $AWS_DEFAULT_REGION
+          aws dynamodb update-item --table-name houndoc_product_master --key '{"product": {"S": "IAM"}}' --update-expression "SET version = :v" --expression-attribute-values "{\":v\": {\"S\": \"$PRODUCT_VERSION\"}}" --region $AWS_DEFAULT_REGION
           echo "Uploading to CHANGELOG ...."
           aws s3 cp CHANGELOG.md s3://houndoc-changelog/MD/AIPlatformIAM.md
           aws cloudfront create-invalidation --distribution-id EIRU1D5WYXMJD --paths "/*"
