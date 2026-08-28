@@ -11,7 +11,8 @@
 
 # Creamos la imagen base que vamos a buildear
 
-FROM quay.io/keycloak/keycloak:25.0 as builder
+ARG KEYCLOAK_VERSION=26.7.2
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} as builder
 
 # Activar health y metricas de ayuda
 ENV KC_HEALTH_ENABLED=true
@@ -44,16 +45,15 @@ RUN /opt/keycloak/bin/kc.sh build --db=$db_vendor
 
 ################################
 
-FROM quay.io/keycloak/keycloak:25.0
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
 
 # Variables de entorno del sistema
 ENV KC_HOSTNAME_STRICT=false
 ENV KC_HTTP_ENABLED=false
-ENV KC_HOSTNAME_STRICT_BACKCHANNEL=true
+ENV KC_HOSTNAME_BACKCHANNEL_DYNAMIC=false
 ENV KC_HTTPS_PORT=8443
 ENV KC_HTTP_PORT=8180
-ENV KC_PROXY=edge
-ENV PROXY_ADDRESS_FORWARDING=true
+ENV KC_PROXY_HEADERS=xforwarded
 
 # Tomamos el programa recién construido en la imagen anterior y lo copiamos 
 # en la actual carpeta de trabajo (donde se sobreescribe)
