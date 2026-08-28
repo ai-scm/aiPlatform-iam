@@ -49,12 +49,10 @@ FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
 
 # Variables de entorno del sistema
 ENV KC_HOSTNAME_STRICT=false
-ENV KC_HTTP_ENABLED=false
-ENV KC_HOSTNAME_STRICT_BACKCHANNEL=true
-ENV KC_HTTPS_PORT=8443
+ENV KC_HTTP_ENABLED=true
+ENV KC_HOSTNAME_BACKCHANNEL_DYNAMIC=false
 ENV KC_HTTP_PORT=8180
-ENV KC_PROXY=edge
-ENV PROXY_ADDRESS_FORWARDING=true
+ENV KC_PROXY_HEADERS=xforwarded
 
 # Tomamos el programa recién construido en la imagen anterior y lo copiamos 
 # en la actual carpeta de trabajo (donde se sobreescribe)
