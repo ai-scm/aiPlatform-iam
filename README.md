@@ -20,13 +20,16 @@ From the project root, run:
 ```bash
 docker run --name houndoc-iam \
   -p 8080:8080 \
+  -v "$(pwd)/themes:/opt/keycloak/themes:ro" \
   -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
   -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
-  quay.io/keycloak/keycloak:25.0 \
-  start-dev
+  quay.io/keycloak/keycloak:26.7.2 \
+  start-dev \
+  --spi-theme-cache-themes=false \
+  --spi-theme-cache-templates=false
 ```
 
-This command creates a container named `houndoc-iam`, exposes Keycloak at `http://localhost:8080`, creates the initial administrator credentials, and starts Keycloak with `start-dev`, which is appropriate for local development.
+This command creates a container named `houndoc-iam`, exposes Keycloak at `http://localhost:8080`, creates the initial administrator credentials, and starts Keycloak with `start-dev`, which is appropriate for local development. It also mounts this repository's `themes/` directory in Keycloak, making the `nuvu-login` and `nuvu-admin-console` themes available. Theme caches are disabled so local theme edits are reflected after refreshing the browser.
 
 Do not use these credentials in a shared or production environment.
 
@@ -46,6 +49,8 @@ Password: admin
 ```
 
 From the console, you can manage the local Keycloak instance. The configuration of realms, clients, users, and roles depends on the needs of each application in the Houndoc ecosystem.
+
+To apply a custom theme, open the target realm and go to **Realm settings** → **Themes**. Select `nuvu-login` for the login theme and/or `nuvu-admin-console` for the admin console theme, then save the changes.
 
 ### 3. Stop, start, and remove the container
 
@@ -67,7 +72,7 @@ The instance created with this command uses the container's storage. If you remo
 
 ## Custom project image
 
-The [`Dockerfile`](./Dockerfile) defines a custom image based on Keycloak `25.0`. During the build, it includes the themes available in `themes/`, the providers available in `providers/`, the `keycloak.conf` configuration, and the truststores available in `truststores/`.
+The [`Dockerfile`](./Dockerfile) defines a custom image based on Keycloak `26.7.2`. During the build, it includes the themes available in `themes/`, the providers available in `providers/`, the `keycloak.conf` configuration, and the truststores available in `truststores/`.
 
 The Dockerfile also requires the `db_vendor` argument to build Keycloak:
 
