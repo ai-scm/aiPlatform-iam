@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 15-09-2026
+
+### Changed
+
+- Renamed environment variables in `keycloak.conf` for clarity:
+  - `hostname-url` → `hostname`
+  - `hostname-admin-url` → `hostname-admin`
+
 ## [1.0.1] - 01-09-2026
 
 ### Fixed
