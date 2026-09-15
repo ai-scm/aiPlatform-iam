@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 
 - Updated the local setup instructions to use Keycloak `26.7.2`, mount the repository themes, and disable their cache during development.
 - Documented how to select the `nuvu-login` and `nuvu-admin-console` themes from the administration console.
+- Renamed environment variables in `keycloak.conf` example for clarity:
+  - `hostname-url` → `hostname`
+  - `hostname-admin-url` → `hostname-admin`
 
 ## [1.0.0] - 28-08-2026
 
