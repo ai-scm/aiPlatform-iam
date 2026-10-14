@@ -74,9 +74,25 @@ set_db_password_from_secret() {
   export KCRAW_DB_PASSWORD
 }
 
+config_value() {
+  config_key="$1"
+
+  sed -n "s/^[[:space:]]*${config_key}[[:space:]]*=//p" \
+    /opt/keycloak/conf/keycloak.conf | head -n 1 | tr -d '\r'
+}
+
 resolve_database_configuration() {
-  db_url_source="${DB_URL-}"
-  db_password_source="${DB_PASSWORD-}"
+  if [ "${DB_URL+x}" = x ]; then
+    db_url_source="$DB_URL"
+  else
+    db_url_source=$(config_value db-url)
+  fi
+
+  if [ "${DB_PASSWORD+x}" = x ]; then
+    db_password_source="$DB_PASSWORD"
+  else
+    db_password_source=$(config_value db-password)
+  fi
 
   case "$db_url_source" in
     arn:*)

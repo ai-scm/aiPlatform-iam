@@ -92,9 +92,10 @@ db-url=${DB_URL}
 db-password=${DB_PASSWORD}
 ```
 
-Both environment variables accept a direct value. When an environment variable
-receives an AWS Secrets Manager ARN, its `SecretString` must be a JSON object
-with `jdbc` and `password` fields:
+Both environment variables accept a direct value. The container also detects an
+ARN set directly in `db-url` or `db-password` in `keycloak.conf`. When either
+source receives an AWS Secrets Manager ARN, its `SecretString` must be a JSON
+object with `jdbc` and `password` fields:
 
 ```json
 {
