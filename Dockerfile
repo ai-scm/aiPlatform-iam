@@ -12,6 +12,10 @@
 # Creamos la imagen base que vamos a buildear
 
 ARG KEYCLOAK_VERSION=26.7.2
+ARG AWS_CLI_IMAGE=public.ecr.aws/aws-cli/aws-cli:2
+
+FROM ${AWS_CLI_IMAGE} AS aws-cli
+
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} as builder
 
 # Activar health y metricas de ayuda
@@ -59,9 +63,16 @@ ENV KC_PROXY_HEADERS=xforwarded
 
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
+# El contenedor base de Keycloak no incluye un gestor de paquetes. Copiamos AWS CLI
+# para resolver, durante el arranque, los valores de Secrets Manager configurados
+# mediante DB_URL y DB_PASSWORD.
+COPY --from=aws-cli /usr/local/aws-cli /usr/local/aws-cli
+COPY --from=aws-cli /usr/local/bin/aws /usr/local/bin/aws
+COPY --chmod=755 docker-entrypoint.sh /opt/keycloak/bin/docker-entrypoint.sh
+
 COPY /truststores/ /opt/keycloak/truststores
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "--config-file=/opt/keycloak/conf/keycloak.conf", "start", "--optimized"]
+ENTRYPOINT ["/opt/keycloak/bin/docker-entrypoint.sh"]
 
 ## ---------------------------------------------------------------- ##
 # FIN SEGUNDA PARTE
