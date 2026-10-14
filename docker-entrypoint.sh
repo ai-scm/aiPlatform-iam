@@ -3,7 +3,7 @@
 set -eu
 
 fail() {
-  echo "Unable to resolve the database configuration from AWS Secrets Manager." >&2
+  echo "ERROR: $*" >&2
   exit 1
 }
 
@@ -17,7 +17,7 @@ is_secretsmanager_arn() {
       return 0
       ;;
     arn:*)
-      fail
+      fail "Invalid AWS Secrets Manager ARN: $secret_arn"
       ;;
     *)
       return 1
@@ -31,17 +31,19 @@ get_secret_json() {
   is_secretsmanager_arn "$secret_arn"
 
   secret_region=$(printf '%s' "$secret_arn" | cut -d ':' -f 4)
-  [ -n "$secret_region" ] || fail
+  [ -n "$secret_region" ] || fail "Unable to extract an AWS region from ARN: $secret_arn"
 
-  secret_json=$(AWS_PAGER='' /usr/local/bin/aws secretsmanager get-secret-value \
+  if ! secret_json=$(AWS_PAGER='' /usr/local/bin/aws secretsmanager get-secret-value \
     --secret-id "$secret_arn" \
     --region "$secret_region" \
     --query 'SecretString' \
-    --output text 2>/dev/null) || fail
+    --output text 2>&1); then
+    fail "AWS Secrets Manager request failed for $secret_arn in $secret_region: $secret_json"
+  fi
 
   case "$secret_json" in
     '' | None)
-      fail
+      fail "Secret $secret_arn does not contain a non-empty SecretString."
       ;;
   esac
 
@@ -52,10 +54,12 @@ extract_secret_field() {
   secret_json="$1"
   secret_field="$2"
 
-  secret_value=$(printf '%s' "$secret_json" | /usr/local/bin/jq -er \
+  if ! secret_value=$(printf '%s' "$secret_json" | /usr/local/bin/jq -er \
     --arg field "$secret_field" \
     '.[$field] as $value | if (($value | type) == "string" and ($value | length) > 0) then $value else error("missing secret field") end' \
-    2>/dev/null) || fail
+    2>&1); then
+    fail "Unable to extract non-empty '$secret_field' from the Secrets Manager JSON: $secret_value"
+  fi
 
   printf '%s' "$secret_value"
 }
