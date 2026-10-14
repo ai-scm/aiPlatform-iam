@@ -13,8 +13,10 @@
 
 ARG KEYCLOAK_VERSION=26.7.2
 ARG AWS_CLI_IMAGE=public.ecr.aws/aws-cli/aws-cli:2
+ARG JQ_IMAGE=ghcr.io/jqlang/jq:1.8.2
 
 FROM ${AWS_CLI_IMAGE} AS aws-cli
+FROM ${JQ_IMAGE} AS jq
 
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} as builder
 
@@ -68,6 +70,7 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 # mediante DB_URL y DB_PASSWORD.
 COPY --from=aws-cli /usr/local/aws-cli /usr/local/aws-cli
 COPY --from=aws-cli /usr/local/bin/aws /usr/local/bin/aws
+COPY --from=jq /jq /usr/local/bin/jq
 COPY --chmod=755 docker-entrypoint.sh /opt/keycloak/bin/docker-entrypoint.sh
 
 COPY /truststores/ /opt/keycloak/truststores

@@ -92,18 +92,29 @@ db-url=${DB_URL}
 db-password=${DB_PASSWORD}
 ```
 
-Both environment variables accept a direct value. They can also receive an AWS
-Secrets Manager ARN, for example:
+Both environment variables accept a direct value. When an environment variable
+receives an AWS Secrets Manager ARN, its `SecretString` must be a JSON object
+with `jdbc` and `password` fields:
+
+```json
+{
+  "password": "database-password",
+  "jdbc": "jdbc:postgresql://bnd-devs-iam-db.cink8syu0l45.us-east-1.rds.amazonaws.com:5432/postgres?user=iam_admin"
+}
+```
+
+The same ARN can be assigned to both variables:
 
 ```text
-DB_URL=jdbc:postgresql://bnd-devs-iam-db.cink8syu0l45.us-east-1.rds.amazonaws.com:5432/postgres?user=iam_admin
+DB_URL=arn:aws:secretsmanager:us-east-1:573578169450:secret:bnd-devs-iam-login-credentials-BVJt9T
 DB_PASSWORD=arn:aws:secretsmanager:us-east-1:573578169450:secret:bnd-devs-iam-login-credentials-BVJt9T
 ```
 
-When a value is an ARN, the container retrieves its plaintext `SecretString` at
-startup. The container IAM role must allow `secretsmanager:GetSecretValue` for
-the referenced secret. If the secret uses a customer-managed KMS key, it must
-also allow `kms:Decrypt`. No AWS access keys are stored in the image.
+For ARN values, the container uses `jdbc` for `DB_URL` and `password` for
+`DB_PASSWORD`; a direct value is used unchanged. The container IAM role must
+allow `secretsmanager:GetSecretValue` for the referenced secret. If the secret
+uses a customer-managed KMS key, it must also allow `kms:Decrypt`. No AWS access
+keys are stored in the image.
 
 ## Reference documentation
 
