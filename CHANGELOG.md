@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 14-10-2026
+
+### Added
+
+- Added runtime resolution of database credentials from AWS Secrets Manager when `db-url` or `db-password` is configured with an ARN.
+- Added support for Secrets Manager JSON payloads with `jdbc` and `password` fields, while preserving direct plaintext database values.
+
+### Changed
+
+- Included AWS CLI and `jq` in the container image to retrieve and parse database secrets before Keycloak starts.
+
 ## [1.0.1] - 01-09-2026
 
 ### Fixed
@@ -12,6 +23,9 @@ All notable changes to this project will be documented in this file.
 
 - Updated the local setup instructions to use Keycloak `26.7.2`, mount the repository themes, and disable their cache during development.
 - Documented how to select the `nuvu-login` and `nuvu-admin-console` themes from the administration console.
+- Renamed environment variables in `keycloak.conf` example for clarity:
+  - `hostname-url` → `hostname`
+  - `hostname-admin-url` → `hostname-admin`
 
 ## [1.0.0] - 28-08-2026
 
