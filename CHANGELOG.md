@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 14-10-2026
+
+### Added
+
+- Added runtime resolution of database credentials from AWS Secrets Manager when `db-url` or `db-password` is configured with an ARN.
+- Added support for Secrets Manager JSON payloads with `jdbc` and `password` fields, while preserving direct plaintext database values.
+
+### Changed
+
+- Included AWS CLI and `jq` in the container image to retrieve and parse database secrets before Keycloak starts.
+
 ## [1.0.1] - 01-09-2026
 
 ### Fixed
