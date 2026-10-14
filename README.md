@@ -82,6 +82,41 @@ docker build --build-arg db_vendor=<database-engine> -t houndoc-iam:local .
 
 The Dockerfile configures optimized startup and parameters intended for deployment with HTTPS and a proxy. For this reason, the `start-dev` command from the previous section is recommended for a quick local test; use the custom image only when the configuration required for that environment has been defined.
 
+### Database credentials from AWS Secrets Manager
+
+The production `keycloak.conf` receives its database settings from `DB_URL` and
+`DB_PASSWORD`:
+
+```properties
+db-url=${DB_URL}
+db-password=${DB_PASSWORD}
+```
+
+Both environment variables accept a direct value. The container also detects an
+ARN set directly in `db-url` or `db-password` in `keycloak.conf`. When either
+source receives an AWS Secrets Manager ARN, its `SecretString` must be a JSON
+object with `jdbc` and `password` fields:
+
+```json
+{
+  "password": "database-password",
+  "jdbc": "jdbc:postgresql://bnd-devs-iam-db.cink8syu0l45.us-east-1.rds.amazonaws.com:5432/postgres?user=iam_admin"
+}
+```
+
+The same ARN can be assigned to both variables:
+
+```text
+DB_URL=arn:aws:secretsmanager:us-east-1:573578169450:secret:bnd-devs-iam-login-credentials-BVJt9T
+DB_PASSWORD=arn:aws:secretsmanager:us-east-1:573578169450:secret:bnd-devs-iam-login-credentials-BVJt9T
+```
+
+For ARN values, the container uses `jdbc` for `DB_URL` and `password` for
+`DB_PASSWORD`; a direct value is used unchanged. The container IAM role must
+allow `secretsmanager:GetSecretValue` for the referenced secret. If the secret
+uses a customer-managed KMS key, it must also allow `kms:Decrypt`. No AWS access
+keys are stored in the image.
+
 ## Reference documentation
 
 - [Official Keycloak README](https://github.com/keycloak/keycloak/blob/main/README.md)
