@@ -69,7 +69,8 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 # para resolver, durante el arranque, los valores de Secrets Manager configurados
 # mediante DB_URL y DB_PASSWORD.
 COPY --from=aws-cli /usr/local/aws-cli /usr/local/aws-cli
-COPY --from=aws-cli /usr/local/bin/aws /usr/local/bin/aws
+# AWS CLI v2 includes its embedded Python libraries alongside the executable.
+COPY --from=aws-cli /usr/local/bin/ /usr/local/bin/
 COPY --from=jq /jq /usr/local/bin/jq
 COPY --chmod=755 docker-entrypoint.sh /opt/keycloak/bin/docker-entrypoint.sh
 
