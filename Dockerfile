@@ -12,13 +12,7 @@
 # Creamos la imagen base que vamos a buildear
 
 ARG KEYCLOAK_VERSION=26.7.2
-ARG AWS_CLI_IMAGE=public.ecr.aws/aws-cli/aws-cli:latest
-ARG JQ_IMAGE=ghcr.io/jqlang/jq:1.8.2
-
-FROM ${AWS_CLI_IMAGE} AS aws-cli
-FROM ${JQ_IMAGE} AS jq
-
-FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} AS builder
+FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} as builder
 
 # Activar health y metricas de ayuda
 ENV KC_HEALTH_ENABLED=true
@@ -59,24 +53,19 @@ ENV KC_HTTP_ENABLED=true
 ENV KC_HOSTNAME_BACKCHANNEL_DYNAMIC=false
 ENV KC_HTTP_PORT=8180
 ENV KC_PROXY_HEADERS=xforwarded
+ENV KC_HEALTH_ENABLED=true
+ENV KC_CACHE=ispn
+ENV KC_CACHE_STACK=jdbc-ping
+ENV JAVA_OPTS_APPEND=-Djgroups.bind.address=SITE_LOCAL -Djava.net.preferIPv4Stack=true
 
 # Tomamos el programa recién construido en la imagen anterior y lo copiamos 
 # en la actual carpeta de trabajo (donde se sobreescribe)
 
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# El contenedor base de Keycloak no incluye un gestor de paquetes. Copiamos AWS CLI
-# para resolver, durante el arranque, los valores de Secrets Manager configurados
-# mediante DB_URL y DB_PASSWORD.
-COPY --from=aws-cli /usr/local/aws-cli /usr/local/aws-cli
-# AWS CLI v2 includes its embedded Python libraries alongside the executable.
-COPY --from=aws-cli /usr/local/bin/ /usr/local/bin/
-COPY --from=jq /jq /usr/local/bin/jq
-COPY --chmod=755 docker-entrypoint.sh /opt/keycloak/bin/docker-entrypoint.sh
-
 COPY /truststores/ /opt/keycloak/truststores
 
-ENTRYPOINT ["/opt/keycloak/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "--config-file=/opt/keycloak/conf/keycloak.conf", "start", "--optimized"]
 
 ## ---------------------------------------------------------------- ##
 # FIN SEGUNDA PARTE
