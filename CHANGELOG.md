@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 17-11-2026
+
+### Changed
+
+- Set PostgreSQL as the database vendor: the image is now built with `--db=postgres` instead of the `db_vendor` build argument, and `KC_DB=postgres` is set in the runtime image.
+
+### Documentation
+
+- Updated the README build command, which no longer requires the `db_vendor` argument.
+- Replaced the README section on AWS Secrets Manager, which described the credential resolution removed in 1.0.3.
+
 ## [1.0.3] - 17-11-2026
 
 ### Changed

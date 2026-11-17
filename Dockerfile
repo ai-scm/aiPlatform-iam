@@ -31,9 +31,7 @@ COPY keycloak.conf /opt/keycloak/conf/keycloak.conf
 
 # Ejecutamos el build
 
-ARG db_vendor
-
-RUN /opt/keycloak/bin/kc.sh build --db=$db_vendor
+RUN /opt/keycloak/bin/kc.sh build --db=postgres
 
 ## ---------------------------------------------------------------- ##
 # FIN PRIMERA PARTE
@@ -48,6 +46,7 @@ RUN /opt/keycloak/bin/kc.sh build --db=$db_vendor
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
 
 # Variables de entorno del sistema
+ENV KC_DB=postgres
 ENV KC_HOSTNAME_STRICT=false
 ENV KC_HTTP_ENABLED=true
 ENV KC_HOSTNAME_BACKCHANNEL_DYNAMIC=false
