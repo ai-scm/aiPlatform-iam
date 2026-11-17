@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 17-11-2026
+
+### Changed
+
+- Configured Keycloak clustering with the Infinispan (`ispn`) cache and the `jdbc-ping` discovery stack, binding JGroups to a site-local address and preferring the IPv4 stack.
+- The container now starts Keycloak directly with `kc.sh start --optimized` using `/opt/keycloak/conf/keycloak.conf`.
+
+### Removed
+
+- Removed the runtime resolution of database credentials from AWS Secrets Manager added in 1.0.2, together with the AWS CLI, `jq` and the custom `docker-entrypoint.sh`. `db-url` and `db-password` are no longer resolved inside the container and are passed to Keycloak as received.
+
 ## [1.0.2] - 14-10-2026
 
 ### Added
