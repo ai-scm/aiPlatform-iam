@@ -56,7 +56,7 @@ ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HEALTH_ENABLED=true
 ENV KC_CACHE=ispn
 ENV KC_CACHE_STACK=jdbc-ping
-ENV JAVA_OPTS_APPEND=-Djgroups.bind.address=SITE_LOCAL -Djava.net.preferIPv4Stack=true
+ENV JAVA_OPTS_APPEND="-Djgroups.bind.address=SITE_LOCAL -Djava.net.preferIPv4Stack=true"
 
 # Tomamos el programa recién construido en la imagen anterior y lo copiamos 
 # en la actual carpeta de trabajo (donde se sobreescribe)
