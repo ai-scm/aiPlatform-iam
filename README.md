@@ -23,7 +23,7 @@ docker run --name houndoc-iam \
   -v "$(pwd)/themes:/opt/keycloak/themes:ro" \
   -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
   -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
-  quay.io/keycloak/keycloak:26.7.2 \
+  quay.io/keycloak/keycloak:26.8.2 \
   start-dev \
   --spi-theme-cache-themes=false \
   --spi-theme-cache-templates=false
@@ -72,9 +72,9 @@ The instance created with this command uses the container's storage. If you remo
 
 ## Custom project image
 
-The [`Dockerfile`](./Dockerfile) defines a custom image based on Keycloak `26.7.2`. During the build, it includes the themes available in `themes/`, the providers available in `providers/`, the `keycloak.conf` configuration, and the truststores available in `truststores/`.
+The [`Dockerfile`](./Dockerfile) defines a custom image based on Keycloak `26.8.2`. During the build, it includes the themes available in `themes/`, the providers available in `providers/`, the `keycloak.conf` configuration, and the truststores available in `truststores/`.
 
-The image is built for PostgreSQL (`kc.sh build --db=postgres` and `KC_DB=postgres`), so no build arguments are required:
+The image is built for PostgreSQL (`KC_DB=postgres` in both the build and runtime stages), so no build arguments are required:
 
 ```bash
 docker build -t houndoc-iam:local .
