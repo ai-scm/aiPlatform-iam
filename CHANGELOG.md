@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 21-11-2026
+
+### Changed
+
+- Updated the Keycloak base image from `26.7.2` to `26.8.2`.
+- Enabled the `stateless` feature (`KC_FEATURES=stateless`) and set the embedded cache cluster name to `keycloak-prod` (`KC_CACHE_EMBEDDED_CLUSTER_NAME`) in both the build and runtime stages.
+- The database vendor is now set in the build stage with `KC_DB=postgres` instead of the `--db=postgres` argument of `kc.sh build`.
+- Set the maximum database connection pool size to `20` (`KC_DB_POOL_MAX_SIZE`).
+
+### Removed
+
+- Removed the explicit clustering configuration added in 1.0.3: `KC_CACHE=ispn`, `KC_CACHE_STACK=jdbc-ping` and the `JAVA_OPTS_APPEND` options that bound JGroups to a site-local address and preferred the IPv4 stack.
+
 ## [1.0.4] - 17-11-2026
 
 ### Changed

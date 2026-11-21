@@ -11,7 +11,7 @@
 
 # Creamos la imagen base que vamos a buildear
 
-ARG KEYCLOAK_VERSION=26.7.2
+ARG KEYCLOAK_VERSION=26.8.2
 FROM quay.io/keycloak/keycloak:${KEYCLOAK_VERSION} as builder
 
 # Activar health y metricas de ayuda
@@ -30,8 +30,11 @@ COPY /providers/ /opt/keycloak/providers
 COPY keycloak.conf /opt/keycloak/conf/keycloak.conf
 
 # Ejecutamos el build
+ENV KC_FEATURES=stateless
+ENV KC_CACHE_EMBEDDED_CLUSTER_NAME=keycloak-prod
+ENV KC_DB=postgres
 
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
+RUN /opt/keycloak/bin/kc.sh build
 
 ## ---------------------------------------------------------------- ##
 # FIN PRIMERA PARTE
@@ -53,9 +56,10 @@ ENV KC_HOSTNAME_BACKCHANNEL_DYNAMIC=false
 ENV KC_HTTP_PORT=8180
 ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HEALTH_ENABLED=true
-ENV KC_CACHE=ispn
-ENV KC_CACHE_STACK=jdbc-ping
-ENV JAVA_OPTS_APPEND="-Djgroups.bind.address=SITE_LOCAL -Djava.net.preferIPv4Stack=true"
+ENV KC_FEATURES=stateless
+ENV KC_CACHE_EMBEDDED_CLUSTER_NAME=keycloak-prod
+ENV KC_DB_POOL_MAX_SIZE=20
+
 
 # Tomamos el programa recién construido en la imagen anterior y lo copiamos 
 # en la actual carpeta de trabajo (donde se sobreescribe)
